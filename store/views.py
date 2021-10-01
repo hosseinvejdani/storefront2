@@ -24,5 +24,5 @@ def product_details(request,id):
 
 
 @api_view()
-def collection_details(request,id):
+def collection_details(request,pk):
     return  Response('ok')
