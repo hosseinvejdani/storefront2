@@ -21,7 +21,7 @@ def product_list(request):
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
 
-@api_view(['GET','PUT'])
+@api_view(['GET','PUT','DELETE'])
 def product_details(request,id):
     product = get_object_or_404(Product,pk=id)
     if request.method == 'GET':
@@ -32,6 +32,11 @@ def product_details(request,id):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+    elif request.method == 'DELETE':
+        if product.orderitem_set.count()>0:
+            Response({'error':'method can not be applied becouse there are one or more order item associated with this product'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view()
 def collection_details(request,pk):
