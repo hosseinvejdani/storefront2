@@ -1,6 +1,8 @@
 {
-    "markdown.preview.fontSize": 18,
-    "editor.fontSize": 18,
-    "debug.console.fontSize": 16,
-    "terminal.integrated.fontSize": 16
+    "markdown.preview.fontSize": 20,
+    "editor.fontSize": 21,
+    "debug.console.fontSize": 18,
+    "terminal.integrated.fontSize": 20,
+    "scm.inputFontSize": 16,
+    "markdown.preview.lineHeight": 1.8
 }
