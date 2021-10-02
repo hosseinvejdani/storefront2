@@ -11,6 +11,8 @@ from .serializers import ProductSerializer, CollectionSerializer
 
 # Create your views here.
 class ProductList(ListCreateAPIView):
+    # in this way you can apply some logic for each method
+    # if you dont need to apply logic, you can use way 2 : next commit
     def get_queryset(self):
         return Product.objects.select_related('collection').all()
 
