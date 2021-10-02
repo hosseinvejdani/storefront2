@@ -34,7 +34,7 @@ def product_details(request,id):
         return Response(serializer.data)
     elif request.method == 'DELETE':
         if product.orderitem_set.count()>0:
-            Response({'error':'method can not be applied becouse there are one or more order item associated with this product'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({'error':'method can not be applied becouse there are one or more order item associated with this product'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
