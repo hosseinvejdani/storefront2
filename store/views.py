@@ -18,6 +18,7 @@ class ProductViewSet(ModelViewSet):
         return {'request': self.request}
 
     def destroy(self, request,*args,**kwargs):
+        product = get_object_or_404(Product, pk = kwargs['pk'])
         if product.orderitem_set.count()>0:
             return Response({'error':'method can not be applied becouse there are one or more order item associated with this product'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request,*args,**kwargs)
@@ -28,6 +29,7 @@ class CollectionViewSet(ModelViewSet):
     serializer_class = CollectionSerializer
 
     def destroy(self, request,*args,**kwargs):
+        collection = get_object_or_404(Collection, pk = kwargs['pk'])
         if collection.product_set.count()>0:
             msg = 'this collection can not be delete becouse it containes one or more products in it'
             return Response({'error':msg},status=status.HTTP_405_METHOD_NOT_ALLOWED)
