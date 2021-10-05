@@ -2,6 +2,13 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 
+class Review(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE,related_name='reviews')
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
