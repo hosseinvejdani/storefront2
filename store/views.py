@@ -2,13 +2,19 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import status
 from .pagination import DefaultPagination
-from .models import Product, Collection, Review
+from .models import Cart, Product, Collection, Review
 from .filters import ProductFilter
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerialize
+from .serializers import CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize
+
+
+class CartViewSet(CreateModelMixin,RetrieveModelMixin,GenericViewSet):
+    queryset = Cart.objects.prefetch_related('items__product').all()
+    serializer_class = CartSerializer
 
 
 class ReviewViewSet(ModelViewSet):
