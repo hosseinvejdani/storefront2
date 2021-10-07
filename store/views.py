@@ -7,10 +7,16 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import status
 from .pagination import DefaultPagination
-from .models import Cart, Product, Collection, Review
+from .models import Cart, CartItem, Product, Collection, Review
 from .filters import ProductFilter
-from .serializers import CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize
+from .serializers import CartItemSerializer, CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize
 
+
+class CartItemViewSet(ModelViewSet):
+    serializer_class = CartItemSerializer
+    
+    def get_queryset(self):
+        return CartItem.objects.filter(cart_id=self.kwargs['cart_pk']).select_related('product')
 
 class CartViewSet(CreateModelMixin,
                   RetrieveModelMixin,
