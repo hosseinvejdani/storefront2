@@ -2,19 +2,19 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import status
 from .pagination import DefaultPagination
-from .models import Cart, CartItem, Product, Collection, Review
+from .models import Cart, CartItem, Customer, Product, Collection, Review
 from .filters import ProductFilter
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize, UpdateCartItemSerializer
+from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize, UpdateCartItemSerializer
 
 
 class CartItemViewSet(ModelViewSet):
 
-    http_method_names = ['get','post','patch','delete']
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -24,10 +24,11 @@ class CartItemViewSet(ModelViewSet):
         return CartItemSerializer
 
     def get_serializer_context(self):
-        return {'cart_id':self.kwargs['cart_pk']}
-    
+        return {'cart_id': self.kwargs['cart_pk']}
+
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs['cart_pk']).select_related('product')
+
 
 class CartViewSet(CreateModelMixin,
                   RetrieveModelMixin,
@@ -78,3 +79,13 @@ class CollectionViewSet(ModelViewSet):
             msg = 'this collection can not be delete becouse it containes one or more products in it'
             return Response({'error': msg}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
+
+class CustomerViewSet(
+    CreateModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    GenericViewSet
+    ):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
