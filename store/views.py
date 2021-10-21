@@ -10,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from .pagination import DefaultPagination
 from .permission import IsAdminOrReadOnly, ViewCustomerHistoryPermission
-from .models import Cart, CartItem, Customer, Product, Collection, Review
+from .models import Cart, CartItem, Customer, Product, Collection, Review, Order
 from .filters import ProductFilter
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize, UpdateCartItemSerializer
+from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize, UpdateCartItemSerializer, OrderSerializer, OrderItemSerializer
 
 
 class CartItemViewSet(ModelViewSet):
@@ -106,3 +106,8 @@ class CustomerViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
