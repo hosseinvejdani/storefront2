@@ -1,18 +1,18 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework import status
 from .pagination import DefaultPagination
 from .permission import IsAdminOrReadOnly, ViewCustomerHistoryPermission
 from .models import Cart, CartItem, Customer, Product, Collection, Review, Order
 from .filters import ProductFilter
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize, UpdateCartItemSerializer, OrderSerializer,CreateOrderSerializer,UpdateOrderSerializer, OrderItemSerializer
+from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CollectionSerializer, ReviewSerialize, UpdateCartItemSerializer, OrderSerializer, CreateOrderSerializer, UpdateOrderSerializer
 
 
 class CartItemViewSet(ModelViewSet):
@@ -91,18 +91,19 @@ class CustomerViewSet(ModelViewSet):
     serializer_class = CustomerSerializer
     permission_classes = [IsAdminUser]
 
-    @action(detail=True,permission_classes=[ViewCustomerHistoryPermission])
-    def history(self,request,pk):
+    @action(detail=True, permission_classes=[ViewCustomerHistoryPermission])
+    def history(self, request, pk):
         return(Response('ok'))
 
-    @action(detail=False,methods=['GET','PUT'],permission_classes=[IsAuthenticated])
-    def me(self,request):
-        (customer, created) = Customer.objects.get_or_create(user_id=request.user.id)
-        if request.method=='GET':
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        (customer, created) = Customer.objects.get_or_create(
+            user_id=request.user.id)
+        if request.method == 'GET':
             serializer = CustomerSerializer(customer)
             return Response(serializer.data)
         elif request.method == 'PUT':
-            serializer = CustomerSerializer(customer,data=request.data)
+            serializer = CustomerSerializer(customer, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
@@ -110,15 +111,16 @@ class CustomerViewSet(ModelViewSet):
 
 class OrderViewSet(ModelViewSet):
 
-    http_method_names = ['get','patch','delete','head','options']
+    http_method_names = ['get', 'patch', 'delete', 'head', 'options']
 
     def get_permissions(self):
-        if self.request.method in ['PATCH','DELETE']:
+        if self.request.method in ['PATCH', 'DELETE']:
             return [IsAdminUser()]
         return [IsAuthenticated()]
 
     def create(self, request):
-        serializer = CreateOrderSerializer(data=request.data,context={'user_id':self.request.user.id})
+        serializer = CreateOrderSerializer(data=request.data, context={
+                                           'user_id': self.request.user.id})
         serializer.is_valid(raise_exception=True)
         order = serializer.save()
         serializer = OrderSerializer(order)
@@ -131,11 +133,9 @@ class OrderViewSet(ModelViewSet):
             return UpdateOrderSerializer
         return OrderSerializer
 
-
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
             return Order.objects.all()
         (customer, _) = Customer.objects.only('pk').get_or_create(user=user.id)
         return Order.objects.filter(customer=customer)
-    
